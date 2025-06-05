@@ -1,0 +1,68 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <fstream>    // necesar pentru ifstream
+#include <limits>     // pentru numeric_limits
+
+using namespace std;
+
+struct Flori {
+    string Soi;
+    int Numar;
+};
+
+// Funcție pentru afișarea florilor
+void afiseazaFlori(const vector<Flori>& flori) {
+    cout << "Lista florilor:\n";
+    for (const Flori& f : flori) {
+        cout << "- " << f.Soi << " (Numar de bucati in stoc: " << f.Numar << ")\n";
+    }
+}
+
+int main() {
+    vector<Flori> flori;
+    int n;
+
+    ifstream fin("stoc_flori.txt");  // denumirea corectă fără spațiu
+
+    if (!fin) {
+        cerr << "Nu se poate citi fisierul.\n"; // mesaj de eroare
+        return 1;
+    }
+
+    fin >> n;  // corect: citim 'n' din fișier, nu de la tastatură
+    for (int i = 0; i < n; ++i) {
+        Flori f;
+        fin >> f.Soi >> f.Numar;
+        flori.push_back(f);
+    }
+    fin.close();
+
+    afiseazaFlori(flori);
+
+    int NumarMin = numeric_limits<int>::max();
+    int NumarMax = numeric_limits<int>::min();
+    string SoiMin, SoiMax;
+
+    for (const Flori& f : flori) {
+        if (f.Numar < NumarMin) {
+            NumarMin = f.Numar;
+            SoiMin = f.Soi;
+        }
+        if (f.Numar > NumarMax) {
+            NumarMax = f.Numar;
+            SoiMax = f.Soi;
+        }
+    }
+
+    cout << "Cele mai multe flori sunt: " << SoiMax << " (" << NumarMax << " bucati in stoc)\n";
+    cout << "Cele mai putine sunt: " << SoiMin << " (" << NumarMin << " bucati in stoc)\n";
+
+    if (NumarMin < 2000) {
+        cout << "Exista cel putin un soi cu mai putin de 2000 de bucati in stoc.\n";
+    } else {
+        cout << "Toate florile sunt in cantitate de cel putin 2000 de bucati in stoc.\n";
+    }
+
+    return 0;
+}
